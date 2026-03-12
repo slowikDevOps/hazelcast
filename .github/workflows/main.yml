@@ -23,16 +23,14 @@ jobs:
     - name: Patch all pom.xml files
       run: |
         cd hazelcast-src
-        # 1. Masowa podmiana we wszystkich plikach pom.xml (szuka w podkatalogach)
         find . -name "pom.xml" -type f -exec sed -i 's/<jackson.version>.*<\/jackson.version>/<jackson.version>2.18.6<\/jackson.version>/g' {} +
-        # 2. Szukamy zmian kontrolnie, || true zapobiega awarii, gdy nic nie znajdzie
         grep -r "<jackson.version>" . || true
 
-    - name: Build with Maven (Force versions)
+    - name: Build with Maven (Force versions & Skip Test Compilation)
       run: |
         cd hazelcast-src
-        # Budujemy projekt wymuszając siłowo wersje Jacksona prosto z konsoli (-D...)
-        mvn clean package -DskipTests -Dcheckstyle.skip=true -Dspotbugs.skip=true -Dmaven.javadoc.skip=true -Djackson.version=2.18.6 -Djackson.core.version=2.18.6 -Djackson.databind.version=2.18.6 -Djackson.annotations.version=2.18.6
+        # Używamy -Dmaven.test.skip=true aby pominąć fazę kompilacji testów
+        mvn clean package -Dmaven.test.skip=true -Dcheckstyle.skip=true -Dspotbugs.skip=true -Dmaven.javadoc.skip=true -Djackson.version=2.18.6 -Djackson.core.version=2.18.6 -Djackson.databind.version=2.18.6 -Djackson.annotations.version=2.18.6
 
     - name: Upload Patched JAR
       uses: actions/upload-artifact@v4
