@@ -26,11 +26,11 @@ jobs:
         find . -name "pom.xml" -type f -exec sed -i 's/<jackson.version>.*<\/jackson.version>/<jackson.version>2.18.6<\/jackson.version>/g' {} +
         grep -r "<jackson.version>" . || true
 
-    - name: Build with Maven (Force versions & Skip Test Compilation)
+    - name: Build with Maven (Skip Tests & Assembly)
       run: |
         cd hazelcast-src
-        # Używamy -Dmaven.test.skip=true aby pominąć fazę kompilacji testów
-        mvn clean package -Dmaven.test.skip=true -Dcheckstyle.skip=true -Dspotbugs.skip=true -Dmaven.javadoc.skip=true -Djackson.version=2.18.6 -Djackson.core.version=2.18.6 -Djackson.databind.version=2.18.6 -Djackson.annotations.version=2.18.6
+        # Dodaliśmy -Dassembly.skipAssembly=true oraz -Djacoco.skip=true
+        mvn clean package -Dmaven.test.skip=true -Dcheckstyle.skip=true -Dspotbugs.skip=true -Dmaven.javadoc.skip=true -Dassembly.skipAssembly=true -Djacoco.skip=true -Djackson.version=2.18.6 -Djackson.core.version=2.18.6 -Djackson.databind.version=2.18.6 -Djackson.annotations.version=2.18.6
 
     - name: Upload Patched JAR
       uses: actions/upload-artifact@v4
